@@ -6,7 +6,7 @@ server {
     server_name your_domain.com; # Replace with your actual domain name
 
     # Redirect all HTTP traffic to HTTPS
-    return 301 https://$host$request_uri;
+    # return 301 https://$host$request_uri;
 }
 
 # This block handles HTTPS requests and proxies them to your Node.js API
