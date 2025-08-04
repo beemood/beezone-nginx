@@ -3,63 +3,8 @@ server {
     listen 80;
     listen [::]:80; # Listen on IPv6 as well
 
-    server_name your_domain.com; # Replace with your actual domain name
-
-    # Redirect all HTTP traffic to HTTPS
-    # return 301 https://$host$request_uri;
-}
-
-# This block handles HTTPS requests and proxies them to your Node.js API
-server {
-
-    # Location block for /api requests
-    location /api/ {
-        # Proxy all requests matching /api/ to your Node.js server
-        proxy_pass http://localhost:3000; # Your Node.js API server address and port
-
-        # Essential headers to forward to the backend
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme; # Tells backend if original request was HTTP or HTTPS
-
-        # Prevent NGINX from buffering responses from the backend.
-        # This is often good for APIs, especially for long-polling or streaming.
-        proxy_buffering off;
-
-        # Timeout settings
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-
-        # Handle redirects from the backend correctly
-        proxy_redirect off;
-
-        # Optional: Increase buffer sizes if you expect large responses
-        # proxy_buffers 8 16k;
-        # proxy_buffer_size 32k;
+    location /api {
+        proxy_pass http://localhost:3000; 
     }
-
-    # Optional: Serve static files directly if your Node.js app also serves a frontend
-    # If your frontend is served by Node.js, you might not need this.
-    # If you have static assets (e.g., /static/images, /css, /js)
-    # that NGINX should serve directly, you can add more location blocks:
-    # location /static/ {
-    #     root /var/www/your_frontend_app; # Path to your static files
-    #     expires 30d; # Cache static files for 30 days
-    #     add_header Cache-Control "public, no-transform";
-    # }
-
-    # Handle other requests (e.g., for a frontend application served by Node.js on a different port,
-    # or if NGINX serves the frontend directly from a static directory).
-    # If your Node.js app serves the entire frontend, you might proxy everything else to it.
-    # If NGINX serves the frontend static files, you'd use a root directive here.
-    # Example for a Node.js served frontend on port 3000 (same as API if it's a monolithic app)
-    # location / {
-    #     proxy_pass http://localhost:3000;
-    #     proxy_set_header Host $host;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #     proxy_set_header X-Forwarded-Proto $scheme;
-    # }
 }
+
